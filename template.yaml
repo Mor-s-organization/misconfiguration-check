@@ -22,6 +22,20 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: lambda_handler
+            Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaMSKExecutionRole
+        - Statement:
+            - Action:
+                - "xray:PutTraceSegments"
+                - "xray:PutTelemetryRecords"
+              Effect: Allow
+              Resource: "*"
+        - Statement:
+            - Action:
+                - sts:AssumeRole
+              Effect: Allow
+              Resource: "*"
       FunctionName: !Join ["-", ["supplyChainDataLakeBridge", !Ref Environment]]
       Environment:
         Variables:
