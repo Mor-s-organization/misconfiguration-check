@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: CloudFormation template for supplyChainDataLakeBridge
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: ["dev", "prod"]
+    Default: "dev"
+Mappings:
+  AquaPlatformArnRole:
+    us-east-1:
+      prod: arn:aws:iam::425436914223:role/us-east-1-rbac_read_access-skd-role
+      dev: arn:aws:iam::141880872468:role/us-east-1-rbac_read_access-skd-role
+    eu-central-1:
+      prod: arn:aws:iam::425436914223:role/eu-central-1-rbac_read_access-skd-role
+    ap-southeast-1:
+      prod: arn:aws:iam::425436914223:role/ap-southeast-1-rbac_read_access-skd-role
+    ap-northeast-2:
+      prod: arn:aws:iam::425436914223:role/ap-northeast-2-rbac_read_access-skd-role
+Resources:
+  lambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_handler
+      FunctionName: !Join ["-", ["supplyChainDataLakeBridge", !Ref Environment]]
+      Environment:
+        Variables:
+          REGION: !Sub "${AWS::Region}"
+          ATLAS_ENV: !Ref Environment
+          AQUA_PLATFORM_ARN_ROLE: !FindInMap [AquaPlatformArnRole, !Ref "AWS::Region", !Ref Environment]
+      Runtime: go1.x
+      CodeUri: ./
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaMSKExecutionRole
+        - Statement:
+            - Action:
+                - "xray:PutTraceSegments"
+                - "xray:PutTelemetryRecords"
+              Effect: Allow
+              Resource: "*"
+        - Statement:
+            - Action:
+                - sts:AssumeRole
+              Effect: Allow
+              Resource: "*"
+      MemorySize: 128
+      Timeout: 600
+      Tags:
+        env: !Join ["-", ["atlas", !Ref Environment]]
+        datadog: "true"
+      Events:
+        MSKEvent:
+          Type: MSK
+          Properties:
+            Stream: !Sub "{{resolve:ssm:/supply-chain/lambdas/msk_cluster_arn-${Environment}}}"
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 100
+            Topics:
+              - example-def
+        MSKEventManifest:
+          Type: MSK
+          Properties:
+            Stream: !Sub "{{resolve:ssm:/supply-chain/lambdas/msk_cluster_arn-${Environment}}}"
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 100
+            Topics:
+              - manifest
+  LambdaFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: lambdaFunction
+    Properties:
+      RetentionInDays: 14
+      LogGroupName:
+        Fn::Join:
+          - ""
+          - - /aws/lambda/
+            - Ref: lambdaFunction
