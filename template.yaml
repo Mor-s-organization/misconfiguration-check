@@ -77,6 +77,7 @@ Resources:
           Properties:
             Stream: !Sub "{{resolve:ssm:/supply-chain/lambdas/msk_cluster_arn-${Environment}}}"
             StartingPosition: TRIM_HORIZON
+            BatchSize: 100
             Topics:
               - manifest
   LambdaFunctionLogGroup:
