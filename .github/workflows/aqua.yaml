@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: mor
         run: printenv
@@ -14,7 +14,7 @@ jobs:
         run: cat /home/runner/work/_temp/_github_workflow/event.json
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
 
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@master
