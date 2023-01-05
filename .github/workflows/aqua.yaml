@@ -28,3 +28,5 @@ jobs:
           AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
           TRIVY_RUN_AS_PLUGIN: "aqua"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v2
