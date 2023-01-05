@@ -13,7 +13,7 @@ jobs:
         run: printenv
       - name: mor 2
         run: cat /home/runner/work/_temp/_github_workflow/event.json
-        
+
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@master
         with:
@@ -28,3 +28,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v1
