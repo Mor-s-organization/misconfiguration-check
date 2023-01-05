@@ -30,6 +30,20 @@ Resources:
           AQUA_PLATFORM_ARN_ROLE: !FindInMap [AquaPlatformArnRole, !Ref "AWS::Region", !Ref Environment]
       Runtime: go1.x
       CodeUri: ./
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaMSKExecutionRole
+        - Statement:
+            - Action:
+                - "xray:PutTraceSegments"
+                - "xray:PutTelemetryRecords"
+              Effect: Allow
+              Resource: "*"
+        - Statement:
+            - Action:
+                - sts:AssumeRole
+              Effect: Allow
+              Resource: "*"
       MemorySize: 128
       Timeout: 600
       Tags:

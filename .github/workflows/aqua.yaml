@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v1
       - name: mor
         run: printenv
       - name: mor 2
@@ -26,3 +28,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v1
