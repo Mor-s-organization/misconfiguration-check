@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/Mor-s-organization/misconfiguration-check#readme",
   "dependencies": {
-    "axios": "^0.19.2",
-    "lodash": "^4.17.20"
+    "axios": "^0.19.2"
   }
 }
