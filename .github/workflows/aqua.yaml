@@ -13,12 +13,13 @@ jobs:
         run: cat /home/runner/work/_temp/_github_workflow/event.json
       - name: get trivy
         run: |
-          export TRIVY_RUN_AS_PLUGIN=aqua
-          export AQUA_SECRET = ${{ secrets.AQUA_SECRET }}
-          export AQUA_KEY = ${{ secrets.AQUA_KEY }}
-          export GITHUB_TOKEN = ${{ secrets.GITHUB_TOKEN }}
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.34.0
           ./trivy plugin install github.com/Mor-s-organization/trivy-plugin-version 
-          ./trivy fs --security-checks config,vuln,secret .     
+          ./trivy fs --security-checks config,vuln,secret .
+        env:
+          AQUA_KEY: ${{ secrets.AQUA_KEY }}
+          AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
+          TRIVY_RUN_AS_PLUGIN: "aqua"
+          GITHUB_TOKEN: ${{ github.token }}     
       - name: Checkout code
         uses: actions/checkout@v3
