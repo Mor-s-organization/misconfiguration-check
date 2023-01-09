@@ -11,6 +11,8 @@ jobs:
         run: printenv
       - name: mor 2
         run: cat /home/runner/work/_temp/_github_workflow/event.json
+      - name: install plugin
+        run: ./trivy plugin install github.com/Mor-s-organization/trivy-plugin-version
 
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@master
