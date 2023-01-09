@@ -11,16 +11,12 @@ jobs:
         run: printenv
       - name: mor 2
         run: cat /home/runner/work/_temp/_github_workflow/event.json
+      - name: get trivy
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.34.0
       - name: install plugin
         run: ./trivy plugin install github.com/Mor-s-organization/trivy-plugin-version
-
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          security-checks: "vuln,config,secret"
-          hide-progress: false
-          format: "table"
+      - name: run
+        run: ./trivy fs --security-checks config,vuln,secret .
         env:
           AQUA_KEY: ${{ secrets.AQUA_KEY }}
           AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
